@@ -73,7 +73,7 @@ static NSString *const SLKTextViewGenericFormattingSelectorPrefix = @"slk_format
 - (void)slk_commonInit
 {
     _pastableMediaTypes = SLKPastableMediaTypeNone;
-    _dynamicTypeEnabled = YES;
+    _dynamicTypeEnabled = NO;
 
     self.undoManagerEnabled = YES;
     
@@ -504,11 +504,17 @@ SLKPastableMediaType SLKPastableMediaTypeFromNSString(NSString *string)
 
 - (void)setFont:(UIFont *)font
 {
-    NSString *contentSizeCategory = [[UIApplication sharedApplication] preferredContentSizeCategory];
+    if (!self.isDynamicTypeEnabled) {
+        [super setFont:font];
+        self.initialFontSize = font.pointSize;
+    } else {
     
-    [self setFontName:font.fontName pointSize:font.pointSize withContentSizeCategory:contentSizeCategory];
-    
-    self.initialFontSize = font.pointSize;
+        NSString *contentSizeCategory = [[UIApplication sharedApplication] preferredContentSizeCategory];
+        
+        [self setFontName:font.fontName pointSize:font.pointSize withContentSizeCategory:contentSizeCategory];
+        
+        self.initialFontSize = font.pointSize;
+    }
 }
 
 - (void)setFontName:(NSString *)fontName pointSize:(CGFloat)pointSize withContentSizeCategory:(NSString *)contentSizeCategory
